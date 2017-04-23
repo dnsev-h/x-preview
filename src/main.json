@@ -1,0 +1,28 @@
+{
+	"name": "X-Preview",
+	"version": "@:../package.json#version",
+	"author": "dnsev-h",
+	"description": "Preview thumbnails on E*Hentai",
+	"namespace": "dnsev-h",
+	"urls": {
+		"homepage": "https://dnsev-h.github.io/x-preview/",
+		"support": "https://github.com/dnsev-h/x-preview/issues",
+		"update_base": "https://raw.githubusercontent.com/dnsev-h/x-preview/master/",
+		"changelog": "https://raw.githubusercontent.com/dnsev-h/x-preview/master/changelog"
+	},
+	"inputs": [ "./main.js" ],
+	"output": "../builds/x-preview.user.js",
+	"icon48": "../resources/images/icon48.png",
+	"icon64": "../resources/images/icon64.png",
+	"targets": [
+		"https://exhentai.org/*",
+		"https://e-hentai.org/*"
+	],
+	"connect_targets": [
+		"exhentai.org",
+		"e-hentai.org"
+	],
+	"gm_permissions": [
+		"GM_xmlhttpRequest"
+	]
+}
