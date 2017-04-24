@@ -1296,6 +1296,9 @@
 
 	var main = (function () {
 
+		var image_selector_small = ".gdtm";
+		var image_selector_large = ".gdtl";
+
 		var observe_changes = function (records) {
 			var i, ii, r;
 			for (i = 0, ii = records.length; i < ii; ++i) {
@@ -1318,13 +1321,21 @@
 		};
 
 		var check_for_images = function (root, action) {
-			var images = $$(".gdtl", root);
-			if (images.length > 0) {
-				action(images, false);
+			if ($.test(root, image_selector_large)) {
+				action([ root ], false);
 			}
-			images = $$(".gdtm", root);
-			if (images.length > 0) {
-				action(images, true);
+			else if ($.test(root, image_selector_small)) {
+				action([ root ], true);
+			}
+			else {
+				var images = $$(image_selector_large, root);
+				if (images.length > 0) {
+					action(images, false);
+				}
+				images = $$(image_selector_small, root);
+				if (images.length > 0) {
+					action(images, true);
+				}
 			}
 		};
 
