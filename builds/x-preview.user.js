@@ -2,7 +2,7 @@
 // @name        X-Preview
 // @namespace   dnsev-h
 // @author      dnsev-h
-// @version     1.0.0
+// @version     1.0.1
 // @description Preview thumbnails on E*Hentai
 // @include     https://exhentai.org/*
 // @include     https://e-hentai.org/*
@@ -17,8 +17,43 @@
 // @grant       GM_xmlhttpRequest
 // @run-at      document-start
 // ==/UserScript==
-(function () {
+(function (window) {
 	"use strict";
+
+	// Greasemonkey 4 compatibility
+	var to_promise = function (fn, self) {
+		return function () {
+			var args = arguments;
+			return new Promise(function (resolve, reject) {
+				try {
+					resolve(fn.apply(self, args));
+				}
+				catch (e) {
+					reject(e);
+				}
+			});
+		};
+	};
+
+	var GM = (function () {
+		var GM = this.GM;
+		if (GM !== null && typeof(GM) === "object") {
+			return GM;
+		}
+
+		var mapping = [
+			[ "xmlHttpRequest", "GM_xmlhttpRequest" ]
+		];
+
+		GM = {};
+		var m, i, ii;
+		for (i = 0, ii = mapping.length; i < ii; ++i) {
+			m = mapping[i];
+			GM[m[0]] = to_promise(this[m[1]], this);
+		}
+
+		return GM;
+	}).call(this);
 
 	/*#{begin_debug:timing=true}#*/
 
@@ -363,17 +398,19 @@
 
 	var HttpRequest = (function () {
 
-		var request;
-
-		if ((function () {
+		var supported = function () {
 			try {
-				return (typeof(GM_xmlhttpRequest) === "function");
+				return (typeof(GM.xmlHttpRequest) === "function");
 			}
 			catch (e) {}
 			return false;
-		})()) {
+		};
+
+		var request;
+
+		if (supported()) {
 			request = function (data) {
-				return GM_xmlhttpRequest(data);
+				GM.xmlHttpRequest(data);
 			};
 		}
 		else {
@@ -1313,6 +1350,9 @@
 
 	var main = (function () {
 
+		var image_selector_small = ".gdtm";
+		var image_selector_large = ".gdtl";
+
 		var observe_changes = function (records) {
 			var i, ii, r;
 			for (i = 0, ii = records.length; i < ii; ++i) {
@@ -1335,13 +1375,21 @@
 		};
 
 		var check_for_images = function (root, action) {
-			var images = $$(".gdtl", root);
-			if (images.length > 0) {
-				action(images, false);
+			if ($.test(root, image_selector_large)) {
+				action([ root ], false);
 			}
-			images = $$(".gdtm", root);
-			if (images.length > 0) {
-				action(images, true);
+			else if ($.test(root, image_selector_small)) {
+				action([ root ], true);
+			}
+			else {
+				var images = $$(image_selector_large, root);
+				if (images.length > 0) {
+					action(images, false);
+				}
+				images = $$(image_selector_small, root);
+				if (images.length > 0) {
+					action(images, true);
+				}
 			}
 		};
 
@@ -1400,5 +1448,5 @@
 
 	$.ready(main);
 
-})();
+}).call(this, window);
 

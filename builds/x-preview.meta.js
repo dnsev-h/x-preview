@@ -2,7 +2,7 @@
 // @name        X-Preview
 // @namespace   dnsev-h
 // @author      dnsev-h
-// @version     1.0.0
+// @version     1.0.1
 // @description Preview thumbnails on E*Hentai
 // @include     https://exhentai.org/*
 // @include     https://e-hentai.org/*
