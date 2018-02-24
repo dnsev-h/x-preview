@@ -1,7 +1,41 @@
-/* jshint eqnull:true, noarg:true, noempty:true, eqeqeq:true, bitwise:false, strict:true, undef:true, curly:false, browser:true, devel:true, newcap:false, maxerr:50 */
-/* globals GM_xmlhttpRequest */
-(function () {
+/* jshint eqnull:true, noarg:true, noempty:true, eqeqeq:true, bitwise:false, strict:true, undef:true, curly:false, browser:true, devel:true, newcap:false, maxerr:50, esnext:true */
+(function (window) {
 	"use strict";
+
+	// Greasemonkey 4 compatibility
+	var to_promise = function (fn, self) {
+		return function () {
+			var args = arguments;
+			return new Promise(function (resolve, reject) {
+				try {
+					resolve(fn.apply(self, args));
+				}
+				catch (e) {
+					reject(e);
+				}
+			});
+		};
+	};
+
+	var GM = (function () {
+		var GM = this.GM;
+		if (GM !== null && typeof(GM) === "object") {
+			return GM;
+		}
+
+		var mapping = [
+			[ "xmlHttpRequest", "GM_xmlhttpRequest" ]
+		];
+
+		GM = {};
+		var m, i, ii;
+		for (i = 0, ii = mapping.length; i < ii; ++i) {
+			m = mapping[i];
+			GM[m[0]] = to_promise(this[m[1]], this);
+		}
+
+		return GM;
+	}).call(this);
 
 	/*#{begin_debug:timing=true}#*/
 
@@ -346,17 +380,19 @@
 
 	var HttpRequest = (function () {
 
-		var request;
-
-		if ((function () {
+		var supported = function () {
 			try {
-				return (typeof(GM_xmlhttpRequest) === "function");
+				return (typeof(GM.xmlHttpRequest) === "function");
 			}
 			catch (e) {}
 			return false;
-		})()) {
+		};
+
+		var request;
+
+		if (supported()) {
 			request = function (data) {
-				return GM_xmlhttpRequest(data);
+				GM.xmlHttpRequest(data);
 			};
 		}
 		else {
@@ -1394,5 +1430,5 @@
 
 	$.ready(main);
 
-})();
+}).call(this, window);
 
