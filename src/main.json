@@ -23,6 +23,7 @@
 		"e-hentai.org"
 	],
 	"gm_permissions": [
-		"GM_xmlhttpRequest"
+		"GM_xmlhttpRequest",
+		"GM.xmlHttpRequest"
 	]
 }
