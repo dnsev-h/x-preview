@@ -1,5 +1,9 @@
 ﻿master
 
+1.0.1.1
+- dnsev-h
+  + Added missing GM.xmlHttpRequest permission
+
 1.0.1
 - dnsev-h
   + Fixed some dynamic document updates not being handled
